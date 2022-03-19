@@ -1,4 +1,4 @@
-const data = [
+const data = [ // temporary, intended to be moved to its own file later on
 	{
 		"start-date": "2021-01-23",
 		"end-date": "2021-02-08",
@@ -24,7 +24,7 @@ const data = [
 
 // TODO: figure out what to do if two events overlap. or do we just assume they wont?
 
-// TODO: add singular incidents, w/o end-date
+// TODO: add support for singular incidents, w/o end-date
 
 // TODO: work on adding titles/desc to events
 
@@ -61,10 +61,12 @@ const parseEvents = data => {
 const drawTimeline = data => {
 	let lastEndTime = false
 	for (const [index, event] of data.entries()) {
+
 		if (lastEndTime) {
 			const durationInMilliseconds = event.startDate.getTime() - lastEndTime
 			const durationInDays = Utils.millisecondsToDays(durationInMilliseconds)
 
+			// draws "empty space" between events, could be its own function maybe? also not robust enough rn
 			drawSegment(durationInDays, false)
 		}
 
@@ -82,10 +84,10 @@ const drawSegment = (height, active = true) => {
 	if (!active)
 		line.classList.add(`disabled`)
 
-	const finalHeight = Math.max(height * 2, 10) // fixme magic numbers
+	const finalHeight = Math.max(height * 2, 10) // FIXME: magic numbers
 	line.style.height = `${finalHeight}px`
 
-	document.body.appendChild(line)
+	document.body.appendChild(line) // FIXME: maybe we should be drawing to a wrapper element made by drawTimeline instead?
 }
 
 const main = _ => {
