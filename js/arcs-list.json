@@ -1,0 +1,28 @@
+{
+	"creation": {
+		"start-date": "22-06-2020",
+		"type": "incident",
+		"title": "A CRIAÇÃO",
+		"desc": "O REKT é criado como refúgio para os membros da Paladins Brasil"
+	},
+	"thanos": {
+		"start-date": "14-12-2020",
+		"type": "incident",
+		"title": "O estalo do Thanos",
+		"desc": "Em um acidente inevitável e imprevisível, todos os canais do servidor são deletados ao tentar automatizar os eventos"
+	},
+	"mudae": {
+		"start-date": "23/01/2021",
+		"end-date": "08/02/2021",
+		"type": "period",
+		"title": "Gacha Mudae",
+		"desc": "Período de gacha da Mudae, quando o servidor se dividiu em facções para conquistas waifus e husbandos no servidor"
+	},
+	"rekto": {
+		"start-date": "06/09/2020",
+		"end-date": "06/10/2020",
+		"type": "event",
+		"title": "REKTO",
+		"desc": "Evento chinês do REKT, inspirado pelo lançamento de Genshin Impact"
+	}
+}

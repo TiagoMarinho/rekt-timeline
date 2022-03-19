@@ -1,0 +1,25 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+html, body {
+	text-align: center;
+	background: #cdc7af;
+}
+.line {
+	background: #4b4640;
+	width: 25px;
+	margin: 3px auto;
+	left: 0;
+	right: 0;
+	border-radius: 0;
+}
+.disabled {
+	width: 10px;
+	opacity: 0.5;
+}
+.square-pattern {
+	opacity: 0.1;
+	mix-blend-mode: multiply;
+	z-index: 10;
+}
