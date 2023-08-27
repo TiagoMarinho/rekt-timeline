@@ -1,8 +1,9 @@
 import { millisecondsToDays } from './utils.mjs'
+import rawEventsList from './eventslist.mjs'
 
-const SCALE = 3
+const SCALE = 2 // each day will take this amount of pixels of space
 
-const data = [ // temporary, intended to be moved to its own file later on
+/*const data = [ // temporary, intended to be moved to its own file later on
 	{
 		"start-date": "2021-01-23",
 		"end-date": "2021-02-08",
@@ -53,7 +54,7 @@ const data = [ // temporary, intended to be moved to its own file later on
 		"title": "Test5",
 		"desc": "just a test"
 	}
-]
+]*/
 
 // TODO: add support for singular incidents, w/o end-date
 
@@ -69,7 +70,7 @@ const data = [ // temporary, intended to be moved to its own file later on
 const parseEvents = data => {
 	const events = data.map(event => {
 		const startDate = new Date(event[`start-date`])
-		const endDate = new Date(event[`end-date`])
+		const endDate = new Date(event[`end-date`] ?? event[`start-date`])
 		const durationInMilliseconds = endDate.getTime() - startDate.getTime()
 
 		const parsedResult = {
@@ -157,8 +158,7 @@ const drawSegment = (x, y, height, styles = []) => {
 
 	line.classList.add(...styles)
 
-	const MINIMUM_SIZE = 10
-	const finalHeight = Math.max(height * SCALE, MINIMUM_SIZE) // FIXME: magic numbers
+	const finalHeight = height * SCALE
 	line.style.top = `${y * SCALE}px`
 	line.style.height = `${finalHeight}px`
 	line.style.left = `${x * 28}px`
@@ -167,7 +167,7 @@ const drawSegment = (x, y, height, styles = []) => {
 }
 
 const main = (_ => {
-	const events = parseEvents(data)
+	const events = parseEvents(rawEventsList)
 
 	// sorts events by start date
 	events.sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
