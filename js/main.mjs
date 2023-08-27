@@ -84,22 +84,24 @@ const moveSegmentsLeft = _ => {
 
 	for (let i = 1; i < lines.length; i++) {
 		for (let j = 0; j < i; j++) {
-			const currentLine = lines[i];
-			const previousLine = lines[j];
+			const currentLine = lines[i]
+			const previousLine = lines[j]
 
-			const currentTop = parseFloat(currentLine.style.top);
-			const currentHeight = parseFloat(currentLine.style.height);
-			const previousTop = parseFloat(previousLine.style.top);
-			const previousHeight = parseFloat(previousLine.style.height);
+			const currentTop = parseFloat(currentLine.style.top)
+			const currentHeight = parseFloat(currentLine.style.height)
+			const previousTop = parseFloat(previousLine.style.top)
+			const previousHeight = parseFloat(previousLine.style.height)
 
-			if (
+			const isSharingSameSpace = 
 				currentTop < previousTop + previousHeight &&
 				currentTop + currentHeight > previousTop
-			) {
-				const prevTop = parseFloat(previousLine.style.left || "0");
-				const prevWidth = parseFloat(previousLine.offsetWidth);
-				currentLine.style.left = `${prevTop + prevWidth + marginLeft}px`;
-			}
+
+			if (!isSharingSameSpace)
+				continue
+
+			const prevTop = parseFloat(previousLine.style.left || "0")
+			const prevWidth = parseFloat(previousLine.offsetWidth)
+			currentLine.style.left = `${prevTop + prevWidth + marginLeft}px`
 		}
 	}
 }
@@ -131,7 +133,7 @@ const renderTimeline = events => {
 }
 
 // only responsible for drawing, does not care about anything else
-const drawSegment = (top, height, styles = []) => {
+const drawSegment = (y, height, styles = []) => {
 	const line = document.createElement(`div`)
 	line.classList.add(`line`)
 
@@ -139,7 +141,7 @@ const drawSegment = (top, height, styles = []) => {
 
 	const MINIMUM_SIZE = 10
 	const finalHeight = Math.max(height * SCALE, MINIMUM_SIZE) // FIXME: magic numbers
-	line.style.top = `${top * SCALE}px`
+	line.style.top = `${y * SCALE}px`
 	line.style.height = `${finalHeight}px`
 
 	timelineElement.appendChild(line)
