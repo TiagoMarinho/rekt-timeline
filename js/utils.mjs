@@ -1,0 +1,1 @@
+export const millisecondsToDays = ms => ms / 1000 / 60 / 60 / 24
