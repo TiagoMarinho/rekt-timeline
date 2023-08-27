@@ -8,7 +8,7 @@ const data = [ // temporary, intended to be moved to its own file later on
 		"end-date": "2021-02-08",
 		"type": "period",
 		"style": "red",
-		"title": "Gacha Mudae",
+		"title": "Test1",
 		"desc": "Período de gacha da Mudae, quando o servidor se dividiu em facções para conquistas waifus e husbandos no servidor"
 	},
 	{
@@ -16,27 +16,41 @@ const data = [ // temporary, intended to be moved to its own file later on
 		"end-date": "2021-01-02",
 		"style": "green",
 		"type": "event",
-		"title": "Test",
+		"title": "Test2",
 	},
 	{
 		"start-date": "2021-01-01",
 		"end-date": "2021-03-29",
 		"style": "blue",
 		"type": "event",
-		"title": "Test",
+		"title": "Test3",
+	},
+	{
+		"start-date": "2021-01-01",
+		"end-date": "2021-03-29",
+		"style": "blue",
+		"type": "event",
+		"title": "Test3",
+	},
+	{
+		"start-date": "2020-12-01",
+		"end-date": "2021-01-02",
+		"style": "green",
+		"type": "event",
+		"title": "Test2",
 	},
 	{
 		"start-date": "2020-09-06",
 		"end-date": "2020-10-06",
 		"type": "event",
-		"title": "REKTO",
+		"title": "Test4",
 		"desc": "Evento chinês do REKT, inspirado pelo lançamento de Genshin Impact"
 	},
 	{
 		"start-date": "2022-03-18",
 		"end-date": "2022-03-19",
 		"type": "event",
-		"title": "something that happened recently",
+		"title": "Test5",
 		"desc": "just a test"
 	}
 ]
@@ -58,13 +72,14 @@ const parseEvents = data => {
 		const endDate = new Date(event[`end-date`])
 		const durationInMilliseconds = endDate.getTime() - startDate.getTime()
 
-		const parsedResult = { // maybe .map'ing it works as well? this kinda ugly
+		const parsedResult = {
 			type: event.type,
 			title: event.title,
 			desc: event.desc,
 			style: event.style,
 			startDate: startDate,
 			endDate: endDate,
+			layer: 0,
 			durationInMilliseconds: durationInMilliseconds
 		}
 
@@ -74,36 +89,38 @@ const parseEvents = data => {
 	return events
 }
 
-// not very elegant but will do for now
-const moveSegmentsLeft = _ => {
-	const lines = Array.from(document.querySelectorAll(".line"));
-	
-	lines.sort((a, b) => parseFloat(a.style.top) - parseFloat(b.style.top));
-
-	const marginLeft = 2; // px
-
-	for (let i = 1; i < lines.length; i++) {
+const assignEventLayers = events => {
+	for (let i = 1; i < events.length; i++) {
 		for (let j = 0; j < i; j++) {
-			const currentLine = lines[i]
-			const previousLine = lines[j]
+			const currentEvent = events[i]
+			const previousEvent = events[j]
 
-			const currentTop = parseFloat(currentLine.style.top)
-			const currentHeight = parseFloat(currentLine.style.height)
-			const previousTop = parseFloat(previousLine.style.top)
-			const previousHeight = parseFloat(previousLine.style.height)
+			const currentStart = currentEvent.startDate.getTime()
+			const currentEnd = currentEvent.endDate.getTime()
+			const previousStart = previousEvent.startDate.getTime()
+			const previousEnd = previousEvent.endDate.getTime()
 
 			const isSharingSameSpace = 
-				currentTop < previousTop + previousHeight &&
-				currentTop + currentHeight > previousTop
+				currentStart < previousEnd &&
+				currentEnd > previousStart
 
 			if (!isSharingSameSpace)
 				continue
 
-			const prevTop = parseFloat(previousLine.style.left || "0")
-			const prevWidth = parseFloat(previousLine.offsetWidth)
-			currentLine.style.left = `${prevTop + prevWidth + marginLeft}px`
+			const previousLayer = previousEvent.layer ?? 0
+			currentEvent.layer = previousLayer + 1
 		}
 	}
+}
+const eventsListToLayers = events => {
+	const layers = []
+	for (const event of events) {
+		if (!layers[event.layer]?.length)
+			layers[event.layer] = []
+
+		layers[event.layer].push(event)
+	}
+	return layers
 }
 
 const getTimelineDuration = events => {
@@ -120,20 +137,21 @@ document.body.appendChild(timelineElement)
 // drawing is actually delegated to drawSegment
 const renderTimeline = events => {
 	const totalDuration = getTimelineDuration(events)
-	drawSegment(0, millisecondsToDays(totalDuration), ["main", "disabled"])
+	drawSegment(-1, 0, millisecondsToDays(totalDuration), ["main", "disabled"])
 	timelineElement.style.height = `${millisecondsToDays(totalDuration) * SCALE}px`
+
+	assignEventLayers(events)
+	const layers = eventsListToLayers(events)
 
 	for (const event of events) {
 		const durationInDays = millisecondsToDays(event.durationInMilliseconds)
 		const startInDays = millisecondsToDays(event.startDate.getTime() - events[0].startDate.getTime())
-		drawSegment(startInDays, durationInDays, event.style ? [event.style] : [])
+		drawSegment(event.layer, startInDays, durationInDays, event.style ? [event.style] : [])
 	}
-
-	moveSegmentsLeft()
 }
 
 // only responsible for drawing, does not care about anything else
-const drawSegment = (y, height, styles = []) => {
+const drawSegment = (x, y, height, styles = []) => {
 	const line = document.createElement(`div`)
 	line.classList.add(`line`)
 
@@ -143,6 +161,7 @@ const drawSegment = (y, height, styles = []) => {
 	const finalHeight = Math.max(height * SCALE, MINIMUM_SIZE) // FIXME: magic numbers
 	line.style.top = `${y * SCALE}px`
 	line.style.height = `${finalHeight}px`
+	line.style.left = `${x * 28}px`
 
 	timelineElement.appendChild(line)
 }
